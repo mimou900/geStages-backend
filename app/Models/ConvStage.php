@@ -14,6 +14,9 @@ class ConvStage extends Model
         'dateFin',
        'description',
        'statut',
-        'maitreStage'
+        'maitre_id',
+        "chef_id",
+        "etudiant_id",
+
     ];
 }

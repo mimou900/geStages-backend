@@ -11,7 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //
+        Schema::disableForeignKeyConstraints();
+
+        Schema::create('maitreDeStage', function (Blueprint $table) {
+            $table->increments('id');
+            $table->bigInteger('numTel');
+        });
+
+        Schema::enableForeignKeyConstraints();
     }
 
     /**
@@ -19,6 +26,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('maitreDeStage');
     }
 };
+

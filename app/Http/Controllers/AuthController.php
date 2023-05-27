@@ -18,7 +18,7 @@ class AuthController extends Controller
         $fields = $request->validate([
             'name'=>'required|string',
             'email'=>'required|string|unique:users,email',
-            'password' => 'required|string|confirmed'
+            'password' => 'required|string'
         ]);
         $user = User::create([
             'name' =>$fields['name'],
@@ -56,15 +56,12 @@ class AuthController extends Controller
         }
         $token = $user->createToken('myapptoken')->plainTextToken;
         $cookie = cookie(name:'jwt', value: $token, minutes:60 * 24);
-        // $response =[
-        //     'user'=>$user,
-        //     'token'=>$token
-        // ];
-        // return response($response ,201);
-        return response([
-            'message' => 'Success',
+        $response =[
             'user'=>$user,
-        ])->withCookie($cookie);
+            'token'=>$token
+        ];
+        return response($response ,201);
+       
     }
 
 

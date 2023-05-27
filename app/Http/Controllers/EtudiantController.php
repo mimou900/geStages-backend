@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Models\Etudiant;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class EtudiantController extends Controller
@@ -11,7 +12,7 @@ class EtudiantController extends Controller
      */
     public function index()
     {
-        return Etudiant::all();
+        return User::where('role', 2)->get();
     }
 
     /**
@@ -33,21 +34,33 @@ class EtudiantController extends Controller
         return Etudiant::create($request->all());
     }
     public function completeEtudiant(Request $request, $id)
-    {
-
-        $request->validate([
-
-        'dateNaissance' ,
+{
+    $validatedData = $request->validate([
+        'dateNaissance',
         'numCarte',
         'numSocial',
-        'numTel' ,
-        'diplome' ,
-        ]);
+        'numTel',
+        'diplome',
+    ]);
 
-        $Etudiant = Etudiant::find($id);
-        $Etudiant->update($request->all());
-        return $Etudiant;
+    $etudiant = Etudiant::find($id);
+
+    if (!$etudiant) {
+        return response()->json(['message' => 'Etudiant not found'], 404);
     }
+
+    foreach ($validatedData as $key => $value) {
+        if ($value !== null) {
+            $etudiant->$key = $value;
+        }
+    }
+
+    $etudiant->save();
+
+    return $etudiant;
+}
+
+
     /**
      * Display the specified resource.
      */

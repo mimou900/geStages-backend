@@ -3,6 +3,7 @@
 
 namespace App\Http\Controllers;
 use App\Models\ConvStage;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class ConvStageController extends Controller
@@ -22,13 +23,38 @@ class ConvStageController extends Controller
     {
 
         $request->validate([
-            'titre' =>'required',
+            'titre' => 'required',
             'dateDebut' => 'required',
-            'dateFin' =>'required',
-            'description' =>'required'
+            'dateFin' => 'required',
+            'description' => 'required',
+            'maitreEmail' => 'required|email',
+            'etudiant_id' => 'required'
         ]);
-
-        return ConvStage::create($request->all());
+        
+        $maitre = User::where('email', $request->maitreEmail)
+                        ->where('role', 3)
+                        ->first();
+        
+        if (!$maitre) {
+            $maitreEmail = $request->maitreEmail;
+        } else {
+            $maitreEmail = null;
+        }
+        
+        $convStage = ConvStage::create([
+            'titre' => $request->titre,
+            'dateDebut' => $request->dateDebut,
+            'dateFin' => $request->dateFin,
+            'description' => $request->description,
+            'etudiant_id' => $request->etudiant_id,
+            'chef_id' => 41,
+            'maitre_id' => $maitre ? $maitre->id : null,
+            'maitre_email' => $maitreEmail
+        ]);
+        
+        return $convStage;
+        
+        
     }
 
     /**
@@ -54,6 +80,12 @@ class ConvStageController extends Controller
     $ConvStage->update(['statut' => 'Accepté']);
     return $ConvStage;
 }
+public function Valider(string $id)
+{
+    $ConvStage = ConvStage::find($id);
+    $ConvStage->update(['statut' => 'Valider']);
+    return $ConvStage;
+}
 
     public function reject(string $id)
     {
@@ -77,6 +109,17 @@ class ConvStageController extends Controller
     {
        return ConvStage::where('name', 'like' , '%' , $name , '%' )->get();
     }
+    public function convStageByEtudiant(Request $request, $etudiant_id)
+{
+    $convStages = ConvStage::where('etudiant_id', $etudiant_id)
+                           ->where('statut', '<>', 'Valider')
+                           ->get();
+    
+    return response()->json($convStages);
+}
+
+
+
 }
 
 

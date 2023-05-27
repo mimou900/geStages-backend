@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\Etudiant;
+use App\Models\ChefDepartement;
+use App\Models\MaitreDeStage;
+
 
 class User extends Authenticatable
 {
@@ -19,7 +23,9 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        "prenom",
         'email',
+        'role',
         'password',
     ];
 
@@ -41,4 +47,18 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+    public function etudiant()
+    {
+        return $this->hasOne(Etudiant::class);
+    }
+
+    public function chefDepartement()
+    {
+        return $this->hasOne(ChefDepartement::class);
+    }
+
+    public function maitreStage()
+    {
+        return $this->hasOne(MaitreDeStage::class);
+    }
 }
